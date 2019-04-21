@@ -1,6 +1,7 @@
 package net.osmand.plus.routepreparationmenu.cards;
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.view.ContextThemeWrapper;
@@ -65,10 +66,17 @@ public class RouteInfoCard extends BaseCard {
 		updateContent(routeStatistics);
 	}
 
+	@Nullable
+	public HorizontalBarChart getChart() {
+		return (HorizontalBarChart) view.findViewById(R.id.chart);
+	}
+
 	private <E> void updateContent(final Statistics<E> routeStatistics) {
 		updateHeader();
 		final HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.chart);
 		GpxUiHelper.setupHorizontalGPXChart(app, chart, 5, 9, 24, true, nightMode);
+		chart.setExtraRightOffset(16);
+		chart.setExtraLeftOffset(16);
 		BarData barData = GpxUiHelper.buildStatisticChart(app, chart, routeStatistics, analysis, true, nightMode);
 		chart.setData(barData);
 		chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -76,24 +84,20 @@ public class RouteInfoCard extends BaseCard {
 			public void onValueSelected(Entry e, Highlight h) {
 				List<RouteSegmentAttribute<E>> elems = routeStatistics.getElements();
 				int i = h.getStackIndex();
-				if (elems.size() > i) {
+				if (i >= 0 && elems.size() > i) {
 					selectedPropertyName = elems.get(i).getPropertyName();
-					LinearLayout container = (LinearLayout) view.findViewById(R.id.route_items);
-					if (!showLegend) {
-						showLegend = true;
+					if (showLegend) {
+						updateLegend(routeStatistics);
 					}
-					container.removeAllViews();
-					attachLegend(container, routeStatistics);
-					setLayoutNeeded();
 				}
 			}
 
 			@Override
 			public void onNothingSelected() {
-				LinearLayout container = (LinearLayout) view.findViewById(R.id.route_items);
-				showLegend = false;
-				container.removeAllViews();
-				setLayoutNeeded();
+				selectedPropertyName = null;
+				if (showLegend) {
+					updateLegend(routeStatistics);
+				}
 			}
 		});
 		LinearLayout container = (LinearLayout) view.findViewById(R.id.route_items);
@@ -111,6 +115,13 @@ public class RouteInfoCard extends BaseCard {
 				setLayoutNeeded();
 			}
 		});
+	}
+
+	protected <E> void updateLegend(Statistics<E> routeStatistics) {
+		LinearLayout container = (LinearLayout) view.findViewById(R.id.route_items);
+		container.removeAllViews();
+		attachLegend(container, routeStatistics);
+		setLayoutNeeded();
 	}
 
 	private Drawable getCollapseIcon(boolean collapsed) {

@@ -147,7 +147,7 @@
     <string name="poi_post_office">Poŝtoficejo</string>
     <string name="poi_post_box">Poŝtkesto</string>
     <string name="poi_school">Lernejo</string>
-    <string name="poi_kindergarten">Infanĝardeno</string>
+    <string name="poi_kindergarten">Infanvartejo</string>
     <string name="poi_university">Universitato</string>
     <string name="poi_hearing_aids">Aŭdhelpil-vendejo</string>
     <string name="poi_herbalist">Herb-vendejo</string>
@@ -239,7 +239,7 @@
     <string name="poi_sewing">Kudrilar-vendejo</string>
     <string name="poi_watches">Horloĝ-vendejo</string>
     <string name="poi_swimming_pool_shop">Naĝej-akcesoriaĵoj vendejo</string>
-    <string name="poi_games">Lud-vendejo</string>
+    <string name="poi_games">Tabullud‑vendejo</string>
     <string name="poi_model">Modelfar-vendejo</string>
     <string name="poi_trophy">Pokaloj-k-premioj-vendejo</string>
     <string name="poi_video_games">Videolud-vendejo</string>
@@ -3538,7 +3538,7 @@
     <string name="poi_books_children">infanaj</string>
     <string name="poi_atoll">Atolo</string>
     <string name="poi_toll_gantry">Telekontrolo de vojimposto</string>
-    <string name="poi_childcare">Infan-vartejo</string>
+    <string name="poi_childcare">Infan/bebo‑vartejo</string>
     <string name="poi_denotation">Signifo</string>
     <string name="poi_denotation_natural_monument">natura monumento</string>
     <string name="poi_denotation_landmark">orientiĝa punkto</string>
@@ -3571,4 +3571,7 @@
     <string name="poi_flare">Gasbruliganta turo</string>
     <string name="poi_change_delete">Forigita objekto</string>
     <string name="poi_health_specialty_radiotherapy_yes">per-radiad-kuracado (radioterapio)</string>
+    <string name="poi_climbing_crag_filter">Areo de grimpado</string>
+    <string name="poi_rescue_box">Tujhelpilo (ensovaĝe)</string>
+    <string name="poi_climbing_crag">jes</string>
 </resources>

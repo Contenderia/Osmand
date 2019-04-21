@@ -12,15 +12,17 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointD;
 
 import net.osmand.AndroidUtils;
 import net.osmand.GPXUtilities.GPXFile;
@@ -60,6 +62,16 @@ public class RouteStatisticCard extends BaseCard {
 		this.onTouchListener = onTouchListener;
 		this.onAnalyseClickListener = onAnalyseClickListener;
 		makeGpxDisplayItem();
+	}
+
+	@Nullable
+	public GPXFile getGpx() {
+		return gpx;
+	}
+
+	@Nullable
+	public GpxDisplayItem getGpxItem() {
+		return gpxItem;
 	}
 
 	@Override
@@ -218,6 +230,11 @@ public class RouteStatisticCard extends BaseCard {
 		}
 	}
 
+	@Nullable
+	public LineChart getChart() {
+		return (LineChart) view.findViewById(R.id.chart);
+	}
+
 	private void buildHeader(GPXTrackAnalysis analysis) {
 		final LineChart mChart = (LineChart) view.findViewById(R.id.chart);
 		GpxUiHelper.setupGPXChart(mChart, 4, 24f, 16f, !nightMode, true);
@@ -242,16 +259,39 @@ public class RouteStatisticCard extends BaseCard {
 			LineData data = new LineData(dataSets);
 			mChart.setData(data);
 
-			mChart.setOnChartGestureListener(new OnChartGestureListener() {
+			mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+				@Override
+				public void onValueSelected(Entry e, Highlight h) {
+					CardChartListener chartListener = getChartListener();
+					if (chartListener != null) {
+						chartListener.onValueSelected(RouteStatisticCard.this, e, h);
+					}
+				}
 
+				@Override
+				public void onNothingSelected() {
+					CardChartListener chartListener = getChartListener();
+					if (chartListener != null) {
+						chartListener.onNothingSelected(RouteStatisticCard.this);
+					}
+				}
+			});
+
+			mChart.setOnChartGestureListener(new OnChartGestureListener() {
+				boolean hasTranslated = false;
 				float highlightDrawX = -1;
 
 				@Override
 				public void onChartGestureStart(MotionEvent me, ChartGesture lastPerformedGesture) {
+					hasTranslated = false;
 					if (mChart.getHighlighted() != null && mChart.getHighlighted().length > 0) {
 						highlightDrawX = mChart.getHighlighted()[0].getDrawX();
 					} else {
 						highlightDrawX = -1;
+					}
+					CardChartListener chartListener = getChartListener();
+					if (chartListener != null) {
+						chartListener.onChartGestureStart(RouteStatisticCard.this, me, lastPerformedGesture);
 					}
 				}
 
@@ -263,6 +303,10 @@ public class RouteStatisticCard extends BaseCard {
 						gpxItem.chartHighlightPos = highlights[0].getX();
 					} else {
 						gpxItem.chartHighlightPos = -1;
+					}
+					CardChartListener chartListener = getChartListener();
+					if (chartListener != null) {
+						chartListener.onChartGestureEnd(RouteStatisticCard.this, me, lastPerformedGesture, hasTranslated);
 					}
 				}
 
@@ -288,10 +332,19 @@ public class RouteStatisticCard extends BaseCard {
 
 				@Override
 				public void onChartTranslate(MotionEvent me, float dX, float dY) {
+					hasTranslated = true;
 					if (highlightDrawX != -1) {
 						Highlight h = mChart.getHighlightByTouchPoint(highlightDrawX, 0f);
 						if (h != null) {
-							mChart.highlightValue(h);
+							/*
+							ILineDataSet set = mChart.getLineData().getDataSetByIndex(h.getDataSetIndex());
+							if (set != null && set.isHighlightEnabled()) {
+								Entry e = set.getEntryForXValue(h.getX(), h.getY());
+								MPPointD pix = mChart.getTransformer(set.getAxisDependency()).getPixelForValues(e.getX(), e.getY());
+								h.setDraw((float) pix.x, (float) pix.y);
+							}
+							*/
+							mChart.highlightValue(h, true);
 						}
 					}
 				}
