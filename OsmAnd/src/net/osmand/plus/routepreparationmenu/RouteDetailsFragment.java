@@ -35,7 +35,6 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider;
-import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture;
 import com.github.mikephil.charting.renderer.HorizontalBarChartRenderer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
@@ -214,6 +213,7 @@ public class RouteDetailsFragment extends ContextMenuFragment implements PublicT
 			mapActivity.findViewById(R.id.bottom_controls_container).setVisibility(View.VISIBLE);
 			if (routeDetailsMenu != null) {
 				routeDetailsMenu.setMapActivity(null);
+				mapActivity.getMapLayers().getMapInfoLayer().setTrackChartPoints(null);
 			}
 		}
 		super.onPause();
@@ -1453,7 +1453,7 @@ public class RouteDetailsFragment extends ContextMenuFragment implements PublicT
 		OsmandApplication app = mapActivity.getMyApplication();
 		LinearLayout convertView = (LinearLayout) mapActivity.getLayoutInflater().inflate(R.layout.transport_stop_route_item_with_icon, null, false);
 		if (transportStopRoute != null) {
-			String routeRef = transportStopRoute.route.getAdjustedRouteRef();
+			String routeRef = transportStopRoute.route.getAdjustedRouteRef(true);
 			int bgColor = transportStopRoute.getColor(app, isNightMode());
 
 			TextView transportStopRouteTextView = (TextView) convertView.findViewById(R.id.transport_stop_route_text);
